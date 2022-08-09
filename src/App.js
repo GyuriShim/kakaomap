@@ -11,11 +11,18 @@ const App=()=>{
   useEffect(()=>{
     const post = firestore.collection("posts")
     console.log(post.doc())
+<<<<<<< HEAD
     post.get().then((querySnapshot) => {
       querySnapshot.forEach((doc) => {
         setDeliveryPay(doc.data().deliveryPay)
         setLocation(doc.data().location)
       })
+=======
+    post.onSnapshot((snapshot) => {
+      snapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data())
+      });
+>>>>>>> d9d728a30fe5b876124b60ae9756450c924fb531
     })
 
     var container = document.getElementById('map');
