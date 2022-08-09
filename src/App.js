@@ -5,28 +5,19 @@ import {BiCurrentLocation} from "react-icons/bi"
 import { firestore } from './firebase'
 
 const App=()=>{
-
-<<<<<<< HEAD
-  const [message, setMessage] = useState("");
-
-  useEffect(()=>{
-    window.addEventListener("message", ({data}) => {
-      setMessage(data)
-      console.log(data)
-    })
-    
-=======
   const [location, setLocation] = useState("")
   const [deliveryPay, setDeliveryPay] = useState(0)
+  
   useEffect(()=>{
     const post = firestore.collection("posts")
-    post.doc("8Qli5ooRJbhypZrmI53r").get().then((doc) => {
-      console.log(doc.data())
-      setLocation(doc.data().location)
-      setDeliveryPay(doc.data().deliveryPay)
-      console.log(doc.id)
+    console.log(post.doc())
+    post.get().then((querySnapshot) => {
+      querySnapshot.forEach((doc) => {
+        setDeliveryPay(doc.data().deliveryPay)
+        setLocation(doc.data().location)
+      })
     })
->>>>>>> 6fea1070dc32fee085def38a1786e0a547f8848e
+
     var container = document.getElementById('map');
     var options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
@@ -36,18 +27,19 @@ const App=()=>{
     var markerPosition  = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
 
     var markerContent = document.createElement('div');
-    markerContent.className = "marker";
-<<<<<<< HEAD
-    markerContent.innerHTML = `<span style="color:black; font-size: 11px">${message}</span>`;
-=======
-    markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
->>>>>>> 6fea1070dc32fee085def38a1786e0a547f8848e
+
+    markerContentCustom(deliveryPay)
+
+    function markerContentCustom(deliveryPay){
+      markerContent.className = "marker";
+      markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
+    }
 
     var marker = new kakao.maps.CustomOverlay({
       position: markerPosition,
       content: markerContent
     });
-    
+  
     function closeOverlay() {
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
