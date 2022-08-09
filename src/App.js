@@ -10,12 +10,13 @@ const App=()=>{
   const [deliveryPay, setDeliveryPay] = useState(0)
   useEffect(()=>{
     const post = firestore.collection("posts")
-    post.doc("8Qli5ooRJbhypZrmI53r").get().then((doc) => {
-      console.log(doc.data())
-      setLocation(doc.data().location)
-      setDeliveryPay(doc.data().deliveryPay)
-      console.log(doc.id)
+    console.log(post.doc())
+    post.onSnapshot((snapshot) => {
+      snapshot.forEach((doc) => {
+        console.log(doc.id, " => ", doc.data())
+      });
     })
+
     var container = document.getElementById('map');
     var options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
