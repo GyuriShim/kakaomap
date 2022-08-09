@@ -1,12 +1,18 @@
 /*global kakao*/ 
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import './App.css'
 import {BiCurrentLocation} from "react-icons/bi"
 
 const App=()=>{
 
+  const [message, setMessage] = useState("");
+
   useEffect(()=>{
-    console.log(window.location)
+    window.addEventListener("message", ({data}) => {
+      setMessage(data)
+      console.log(data)
+    })
+    
     var container = document.getElementById('map');
     var options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
@@ -17,7 +23,7 @@ const App=()=>{
 
     var markerContent = document.createElement('div');
     markerContent.className = "marker";
-    markerContent.innerHTML = '<span style="color:black; font-size: 11px">1,000</span>';
+    markerContent.innerHTML = `<span style="color:black; font-size: 11px">${message}</span>`;
 
     var marker = new kakao.maps.CustomOverlay({
       position: markerPosition,
