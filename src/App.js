@@ -2,9 +2,11 @@
 import React, { useEffect, useState } from 'react'
 import './App.css'
 import {BiCurrentLocation} from "react-icons/bi"
+import { firestore } from './firebase'
 
 const App=()=>{
 
+<<<<<<< HEAD
   const [message, setMessage] = useState("");
 
   useEffect(()=>{
@@ -13,6 +15,18 @@ const App=()=>{
       console.log(data)
     })
     
+=======
+  const [location, setLocation] = useState("")
+  const [deliveryPay, setDeliveryPay] = useState(0)
+  useEffect(()=>{
+    const post = firestore.collection("posts")
+    post.doc("8Qli5ooRJbhypZrmI53r").get().then((doc) => {
+      console.log(doc.data())
+      setLocation(doc.data().location)
+      setDeliveryPay(doc.data().deliveryPay)
+      console.log(doc.id)
+    })
+>>>>>>> 6fea1070dc32fee085def38a1786e0a547f8848e
     var container = document.getElementById('map');
     var options = {
       center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
@@ -23,7 +37,11 @@ const App=()=>{
 
     var markerContent = document.createElement('div');
     markerContent.className = "marker";
+<<<<<<< HEAD
     markerContent.innerHTML = `<span style="color:black; font-size: 11px">${message}</span>`;
+=======
+    markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
+>>>>>>> 6fea1070dc32fee085def38a1786e0a547f8848e
 
     var marker = new kakao.maps.CustomOverlay({
       position: markerPosition,
@@ -43,7 +61,7 @@ const App=()=>{
     var infoContent ='<div class="overlaybox">'+
         '	<div style="align-items: center">'+
         '		<span style="float:left;padding-right:5px;margin-bottom:11px">위치</span>'+
-        '		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left;float:left;margin-bottom:11px">서울 용산구 새창로45가길 20</div>'+
+        `		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left;float:left;margin-bottom:11px">${location}</div>`+
         '	</div>'+
         '	<div style="align-items: center;">'+
         '		<span style="padding-right:5px;float:left;margin-bottom:11px">시간</span>'+
