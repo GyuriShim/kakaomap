@@ -3,19 +3,39 @@ import React, { useEffect, useState } from 'react'
 import './App.css'
 import {BiCurrentLocation} from "react-icons/bi"
 import { firestore } from './firebase'
+import Info from './Info'
+import infowindow from './Info'
 
 const App=()=>{
 
   const [location, setLocation] = useState("")
   const [deliveryPay, setDeliveryPay] = useState(0)
-  useEffect(()=>{
-    const post = firestore.collection("posts")
-    console.log(post.doc())
-    post.onSnapshot((snapshot) => {
+  const [imageUrl, setImageUrl] = useState("")
+  const [itemName, setItemName] = useState("")
+  const [timeLimit, setTimeLimit] = useState("")
+  const [posts, setPosts] = useState([])
+
+  useEffect(() => {
+    let post = firestore.collection("posts").onSnapshot((snapshot) => {
+      const list = []
       snapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data())
-      });
+        list.push({
+          id: doc.id,
+          ...doc.data()
+        })
+      })
+      setPosts(list)
+      if (list !== []) {
+        setDeliveryPay(list[0].deliveryPay)
+        setLocation(list[0].location)
+      }
     })
+   
+    return () => post()
+    
+  },[])
+
+  useEffect(()=>{
 
     var container = document.getElementById('map');
     var options = {
@@ -23,67 +43,132 @@ const App=()=>{
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
-    var markerPosition  = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
+    var markerPosition = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
 
     var markerContent = document.createElement('div');
     markerContent.className = "marker";
-    markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
+    markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay}</span>`;
+
+    var content = document.createElement("div")
+    content.className = "overlaybox"
+    
+    var locInnerContent = document.createElement("div")
+    locInnerContent.className = "innerContent"
+
+    var loc = document.createElement("span")
+    loc.className = "label"
+    loc.innerHTML = "위치"
+
+    var locInfoBox = document.createElement("div")
+    locInfoBox.className = "infoBox"
+    locInfoBox.innerHTML = location
+    
+    locInnerContent.append(loc, locInfoBox)
+
+    var timeInnerContent = document.createElement("div")
+    timeInnerContent.className = "innerContent"
+
+    var time = document.createElement("span")
+    time.className = "label"
+    time.innerHTML = "시간"
+
+    var timeInfoBox = document.createElement("div")
+    timeInfoBox.className = "infoBox"
+    timeInfoBox.innerHTML = timeLimit
+
+    timeInnerContent.append(time, timeInfoBox)
+
+    var payInnerContent = document.createElement("div")
+    payInnerContent.className = "innerContent"
+
+    var pay = document.createElement("span")
+    pay.className = "label"
+    pay.innerHTML = "가격"
+
+    var payInfoBox = document.createElement("div")
+    payInfoBox.className = "infoBox"
+    payInfoBox.innerHTML = deliveryPay
+
+    payInnerContent.append(pay, payInfoBox)
+
+    var itemInnerContent = document.createElement("div")
+    itemInnerContent.className = "innerContent"
+
+    var item = document.createElement("span")
+    item.className = "label"
+    item.innerHTML = "정보"
+
+    var itemInfoBox = document.createElement("div")
+    itemInfoBox.className = "infoBox"
+    itemInfoBox.innerHTML = itemName
+
+    itemInnerContent.append(item, itemInfoBox)
+
+    var image = document.createElement("div")
+    image.className = "image"
+    image.innerHTML = `<img style="width: 70px; height: 70px; padding-bottom: 11px; align-self: flex-start; margin-left: 35px;" src=${imageUrl}/>`
+
+    var line = document.createElement("hr")
+    line.className = "line"
+
+    var deliveryTimeInnerContent = document.createElement("div")
+    deliveryTimeInnerContent.className = "innerContent"
+
+    var deliveryTime = document.createElement("span")
+    deliveryTime.className = "label"
+    deliveryTime.innerHTML = "배송 예상 시간"
+
+    var deliveryTimeInputBox = document.createElement("input")
+    deliveryTimeInputBox.className = "deliveryTime"
+    
+    deliveryTimeInnerContent.append(deliveryTime, deliveryTimeInputBox)
+
+    var currentLocInnerContent = document.createElement("div")
+    currentLocInnerContent.className = "innerContent"
+
+    var currentLoc = document.createElement("span")
+    currentLoc.className = "label"
+    currentLoc.innerHTML = "현재 위치"
+
+    var currentLocInputBox = document.createElement("input")
+    currentLocInputBox.className = "deliveryTime"
+
+    var btn = document.createElement("button")
+    btn.className = "currentLoc"
+
+    var icon = document.createElement("i")
+    icon.className = "fa-solid fa-location-crosshairs fa-xl"
+
+    btn.appendChild(icon)
+
+    currentLocInnerContent.append(currentLoc, currentLocInputBox, btn)
+
+    var btnInnerContent = document.createElement("div")
+    btnInnerContent.className = "btnLayout"
+
+    var closeBtn = document.createElement("button")
+    closeBtn.className = "closeBtn"
+    closeBtn.innerHTML = "나가기"
+
+    var submitBtn = document.createElement("button")
+    submitBtn.className = "submitBtn"
+    submitBtn.innerHTML = "매칭 요청"
+
+    btnInnerContent.append(closeBtn, submitBtn)
+
+    content.append(locInnerContent,timeInnerContent,payInnerContent,itemInnerContent,image,line,deliveryTimeInnerContent,currentLocInnerContent,btnInnerContent)
+
 
     var marker = new kakao.maps.CustomOverlay({
       position: markerPosition,
       content: markerContent
     });
     
-    function closeOverlay() {
-      document.querySelector("div.marker").style.background = "#ffffff";
-      infoOverlay.setMap(null);
-    };
-
-    function submitReq() {
-      document.querySelector("div.marker").style.background = "#ffffff";
-      infoOverlay.setMap(null);
-    }
-
-    var infoContent ='<div class="overlaybox">'+
-        '	<div style="align-items: center">'+
-        '		<span style="float:left;padding-right:5px;margin-bottom:11px">위치</span>'+
-        `		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left;float:left;margin-bottom:11px">${location}</div>`+
-        '	</div>'+
-        '	<div style="align-items: center;">'+
-        '		<span style="padding-right:5px;float:left;margin-bottom:11px">시간</span>'+
-        '		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left; float:left;margin-bottom:11px">1시간 이내</div>'+
-        '	</div>'+
-        '	<div style="align-items: center;">'+
-        '		<span style="padding-right:5px;float:left;margin-bottom:11px">가격</span>'+
-        '		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left; float:left;margin-bottom:11px">1,000</div>'+
-        '	</div>'+
-        '	<div style="align-items: center;">'+
-        '		<span style="padding-right:5px;float:left;margin-bottom:11px;">정보</span>'+
-        '		<div style="align-items: stretch;padding: 4px;background-color:#fff;text-align: left; float:left;margin-bottom:11px">생수</div>'+
-        '	</div>'+
-        '	<hr/>'+
-        '	<div style="align-items: center;">'+
-        '		<span style="padding-right:5px;float:left;margin-bottom:11px;">배송 예상 시간</span>'+
-        '		<input type="text" style="align-items: stretch; padding: 4px;background-color:#fff;text-align: left; float:left; margin-bottom:11px;border-width:0; font-size: 15px"/>'+
-        '	</div>'+
-        '	<div style="align-items: center; width: 270px">'+
-        '		<span style="padding-right:5px;margin-bottom:11px;float:left;">현재 위치</span>'+
-        '		<div style="align-items: center; width: 204px">'+
-        '			<input type="text" style="width:100%; padding: 4px;background-color:#fff;text-align: left; float:left; margin-bottom:11px;border-width:0; font-size: 15px"/>'+
-        '			<button style="float:left;">'+
-        '				<i class="fa-solid fa-location-crosshairs"></i>'+
-        '			</button>'+
-        '		</div>'+
-        '	</div>'+
-        '	<div style="flex-direction:row; justify-content:space-evenly;">'+
-        '		<button onclick="closeOverlay()" style="float:left; background: #F0F0F0;border-radius: 10px;width:105px;height:25px;border-width:0;margin-left:20px;margin-right:35px">나가기</button>'+
-        '		<button onclick="submitReq()" style="float:left; background: #D5F999;border-radius: 10px;width:105px;height:25px;border-width:0;">매칭 요청</button>'+
-        '	</div>'+
-        '</div>';
-
+    
     var infoOverlay = new kakao.maps.CustomOverlay({
-      content: infoContent,
+      content: content,
       position: marker.getPosition(),
+      map: null
     })
 
     markerContent.addEventListener('click', function() {
@@ -91,9 +176,18 @@ const App=()=>{
       infoOverlay.setMap(map);
     });
 
-    
+    closeBtn.addEventListener("click", function(){
+      document.querySelector("div.marker").style.background = "#ffffff";
+      infoOverlay.setMap(null);
+    })
+
+    submitBtn.addEventListener("click", function() {
+      document.querySelector("div.marker").style.background = "#ffffff";
+      infoOverlay.setMap(null);
+    })
+
   marker.setMap(map);
-    }, [])
+    }, [deliveryPay, imageUrl, itemName, location, timeLimit])
 
     const post = () => {
       if (window.ReactNativeWebView) {
