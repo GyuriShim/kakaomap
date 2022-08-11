@@ -5,57 +5,89 @@ import {BiCurrentLocation} from "react-icons/bi"
 import { firestore } from './firebase'
 
 const App=()=>{
-  const [location, setLocation] = useState("")
-  const [deliveryPay, setDeliveryPay] = useState(0)
+  let [location, setLocation] = useState("");
+  let [deliveryPay, setDeliveryPay] = useState(0);
+  let [coordinate, setCoordinate] = useState({latitude: 37.365264512305174, longitude: 127.10676860117488})
   
   useEffect(()=>{
     const post = firestore.collection("posts")
-    console.log(post.doc())
-<<<<<<< HEAD
-    post.get().then((querySnapshot) => {
-      querySnapshot.forEach((doc) => {
-        setDeliveryPay(doc.data().deliveryPay)
-        setLocation(doc.data().location)
-      })
-=======
-    post.onSnapshot((snapshot) => {
-      snapshot.forEach((doc) => {
-        console.log(doc.id, " => ", doc.data())
-      });
->>>>>>> d9d728a30fe5b876124b60ae9756450c924fb531
-    })
 
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(37.3256467, 127.10117),
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
-    var markerPosition  = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
 
-    var markerContent = document.createElement('div');
+    post.onSnapshot((snapshot) => {
+      snapshot.forEach((doc) => {
+        console.log(doc.data())
+        /*setDeliveryPay(doc.data().deliveryPay)
+        setLocation(doc.data().location)
+        setCoordinate({
+          latitude: doc.data().coordinate.latitude,
+          longitude: doc.data().coordinate.longitude,
+        })*/
+        location = doc.data().location;
+        deliveryPay = doc.data().deliveryPay;
+        coordinate = {latitude: doc.data().coordinate.latitude, longitude: doc.data().coordinate.longitude};
 
-    markerContentCustom(deliveryPay)
+        var markerPosition  = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude); 
+        var markerContent = document.createElement('div');
+        markerContent.className = "marker";
+        markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
 
-    function markerContentCustom(deliveryPay){
-      markerContent.className = "marker";
-      markerContent.innerHTML = `<span style="color:black; font-size: 11px">${deliveryPay}</span>`;
-    }
+        var marker = new kakao.maps.CustomOverlay({
+          position: markerPosition,
+          content: markerContent
+        });
 
-    var marker = new kakao.maps.CustomOverlay({
+        marker.setMap(map);
+
+        var infowindow = new kakao.maps.InfoWindow({
+          content: "abc" // 인포윈도우에 표시할 내용
+        });
+
+        /*(function(marker, infowindow) {
+          // 마커에 mouseover 이벤트를 등록하고 마우스 오버 시 인포윈도우를 표시합니다 
+          kakao.maps.event.addEventListener(marker, 'mouseover', function() {
+              infowindow.open(map, marker);
+          });
+  
+          // 마커에 mouseout 이벤트를 등록하고 마우스 아웃 시 인포윈도우를 닫습니다
+          kakao.maps.event.addEventListener(marker, 'mouseout', function() {
+              infowindow.close();
+          });
+        })(marker, infowindow);*/
+      });
+      
+    })
+    
+    
+    
+
+    //var markerPosition  = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
+    
+
+    //var markerContent = document.createElement('div');
+    
+    
+
+    /*var marker = new kakao.maps.CustomOverlay({
       position: markerPosition,
       content: markerContent
-    });
-  
-    function closeOverlay() {
+    });*/
+    
+
+    /*function closeOverlay() {
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
-    };
+    }
 
     function submitReq() {
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
-    }
+    }*/
 
     var infoContent ='<div class="overlaybox">'+
         '	<div style="align-items: center">'+
@@ -94,31 +126,23 @@ const App=()=>{
         '	</div>'+
         '</div>';
 
-    var infoOverlay = new kakao.maps.CustomOverlay({
+    /*var infoOverlay = new kakao.maps.CustomOverlay({
       content: infoContent,
       position: marker.getPosition(),
-    })
+    })*/
 
-    markerContent.addEventListener('click', function() {
+    /*markerContent.addEventListener('click', function() {
       document.querySelector("div.marker").style.background = "#E8FFC1";
       infoOverlay.setMap(map);
-    });
+    });*/
 
-    
-  marker.setMap(map);
-    }, [])
+  }, [])
+  
 
-    const post = () => {
-      if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage("Hello")
-      } else {
-        alert({message: "eeeerrr"})
-      }
-    }
     return (
         <div>
         	<div id="map" style={{width:"500px", height:"900px"}}></div> 
-          <button className='locationBtn' onClick={post}>
+          <button className='locationBtn'>
             <BiCurrentLocation size={30}/>
           </button>
         </div>
