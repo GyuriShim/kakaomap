@@ -1,0 +1,125 @@
+@font-face {
+  font-family: "BlackHanSans-Regular";
+  src: url("./fonts/BlackHanSans-Regular.ttf");
+}
+
+@font-face {
+  font-family: "NanumSquareR";
+  src: url("./fonts/NanumSquareR.ttf");
+}
+
+.marker{
+  background-color: #DDFFA7;
+  border-radius: 7px;
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25);
+  padding: 0px 8px 2px 8px;
+}
+
+.overlaybox{
+  flex-direction: column;
+  width: 370px;
+  padding:40px 0px 40px 0px;
+  background-color: rgba(236, 224, 255, 1);
+  border-radius: 25px;
+  display: flex;
+  align-items: center;
+  z-index: 100;
+}
+
+.locationBtn{
+  background-color: #ffffff;
+  position: absolute; 
+  top: 5px; 
+  left: 5px; 
+  z-index: 1; 
+  border-width: 0px; 
+  border-radius: 5px; 
+  box-shadow: 0px 4px 4px 0px rgba(0, 0, 0, 0.25); 
+  height: 36px; 
+  width: 36px;
+}
+
+.closeBtn{
+  background: #F0F0F0;
+  border-radius: 10px;
+  width:105px;
+  height:25px;
+  border-width:0;
+  font-family: "BlackHanSans-Regular";
+  font-size: 15px;
+  margin: 11px 50px 0px 20px;
+}
+
+.submitBtn{
+  background: #D5F999;
+  border-radius: 10px;
+  width:105px;
+  height:25px;
+  border-width:0;
+  font-family: "BlackHanSans-Regular";
+  font-size: 15px;
+}
+
+.innerContent{
+  align-items: center;
+  margin: auto;
+  vertical-align:middle;
+}
+
+.label{
+  padding-top: 5px;
+  padding-right:5px;
+  float: left;
+  font-family: "NanumSquareR";
+  font-size: 15px;
+}
+
+.infoBox{
+  width: 260px;
+  height: 18px;
+  padding: 5px;
+  background-color:#fff;
+  text-align: left;
+  margin-bottom:11px;
+  float: left;
+  font-family: "NanumSquareR";
+  font-size: 15px;
+}
+
+.image{
+  width: 70px;
+  height: 70px;
+  padding-bottom: 11px;
+  align-self: flex-start;
+  margin-left: 35px;
+}
+
+.line{
+  width: 305px;
+  color: darkgrey;
+  margin: 0px 0px 11px 0px;
+}
+
+.deliveryTime{
+  align-items: stretch; 
+  padding: 4px;
+  background-color:#fff;
+  text-align: left; 
+  margin-bottom:11px;
+  border-width:0; 
+  font-size: 15px;
+  font-family: "NanumSquareR";
+  width: 195px;
+}
+
+.btnLayout{
+  justify-content:space-around;
+  width: 340px;
+  align-self:flex-end;
+}
+
+.currentLoc{
+  padding-left: 8px;
+  border-width: 0;
+  background-color: rgba(236, 224, 255, 0);
+}
