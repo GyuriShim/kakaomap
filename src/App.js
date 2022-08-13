@@ -27,10 +27,7 @@ const App=()=>{
         })
       })
       setPosts(list)
-      if (list !== []) {
-        setDeliveryPay(list[0].deliveryPay)
-        setLocation(list[0].location)
-      }
+      
     })
     return () => post()
     
@@ -45,38 +42,7 @@ const App=()=>{
     };
     var map = new kakao.maps.Map(container, options);
 
-    for(var i = 0; i < posts.length; i++){
-        setLocation(posts[i].location)
-        setDeliveryPay(posts[i].deliveryPay)
-        //setCoordinate({posts[i].coordinate.latitude, posts[i].coordinate.longitude});
-        coordinate = {latitude: posts[i].coordinate.latitude, longitude: posts[i].coordinate.longitude};
-
-        var markerPosition = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude);
-
-        var markerContent = document.createElement('div');
-        markerContent.className = "marker";
-        markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay}</span>`;
-
-        var marker = new kakao.maps.CustomOverlay({
-            position: markerPosition,
-            content: markerContent
-        });
-
-        marker.setMap(map);
-
-        var infoOverlay = new kakao.maps.CustomOverlay({
-            content: content,
-            position: marker.getPosition(),
-            map: null
-        })
-
-        markerContent.addEventListener('click', function() {
-            document.querySelector("div.marker").style.background = "#E8FFC1";
-            console.log("click!!")
-            infoOverlay.setMap(map);
-        });
-        
-    }
+    
     
 
     var content = document.createElement("div")
@@ -188,7 +154,40 @@ const App=()=>{
 
     content.append(locInnerContent,timeInnerContent,payInnerContent,itemInnerContent,image,line,deliveryTimeInnerContent,currentLocInnerContent,btnInnerContent)
     
-    /*var infoOverlay = new kakao.maps.CustomOverlay({
+    for(var i = 0; i < posts.length; i++){
+      setLocation(posts[i].location)
+      setDeliveryPay(posts[i].deliveryPay)
+      //setCoordinate({posts[i].coordinate.latitude, posts[i].coordinate.longitude});
+      coordinate = {latitude: posts[i].coordinate.latitude, longitude: posts[i].coordinate.longitude};
+
+      var markerPosition = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude);
+
+      var markerContent = document.createElement('div');
+      markerContent.className = "marker";
+      markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay}</span>`;
+
+      var marker = new kakao.maps.CustomOverlay({
+          position: markerPosition,
+          content: markerContent
+      });
+
+      marker.setMap(map);
+
+      var infoOverlay = new kakao.maps.CustomOverlay({
+          content: content,
+          position: marker.getPosition(),
+          map: null
+      })
+      
+      markerContent.addEventListener('click', function() {
+          document.querySelector("div.marker").style.background = "#E8FFC1";
+          console.log("click!!")
+          infoOverlay.setMap(map);
+      });
+      
+  }
+
+    var infoOverlay = new kakao.maps.CustomOverlay({
       content: content,
       position: marker.getPosition(),
       map: null
@@ -207,7 +206,7 @@ const App=()=>{
     submitBtn.addEventListener("click", function() {
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
-    })*/
+    })
 
   //marker.setMap(map);
     }, [deliveryPay, imageUrl, itemName, location, timeLimit])
