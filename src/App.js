@@ -13,12 +13,13 @@ const App=()=>{
   const [imageUrl, setImageUrl] = useState("")
   const [itemName, setItemName] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
-  const [coordinate, setCoordinate] = useState({})
+  //const [coordinate, setCoordinate] = useState({})
   const [address, setAddress] = useState("")
   const [postId, setPostId] = useState("")
   const user = "user"
   let deliveryTime = 0
-
+  let current = ""
+  let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
   const [posts, setPosts] = useState([])
 
   const onMessageHandler = (e) => {
@@ -26,9 +27,10 @@ const App=()=>{
     console.log(event)
   }
 
-  const submit = useCallback(async() => {
+  const submit = useCallback(async(deliveryTime, address, coordinate) => {
     try {
-      await createMatching({user, coordinate, address,deliveryTime, postId})
+        console.log("deliveryTime: ", deliveryTime)
+      await createMatching({user, coordinate, address, deliveryTime, postId})
     } catch (error) {
       console.log(error)
     }
@@ -59,7 +61,6 @@ const App=()=>{
   },[])
 
   useEffect(()=>{
-    let current = ""
     var container = document.getElementById('map');
     var options = {
       center: new kakao.maps.LatLng(37.4019822, 126.9218479),
@@ -157,6 +158,7 @@ const App=()=>{
     var currentLocInputBox = document.createElement("div")
     currentLocInputBox.className = "currentBox"
     currentLocInputBox.innerHTML = current
+    currentLocInputBox.id = "currentBox"
 
     var btn = document.createElement("button")
     btn.className = "currentLoc"
@@ -210,8 +212,9 @@ const App=()=>{
 
     submitBtn.addEventListener("click", function() {
       deliveryTime = document.getElementById("deliveryTime").value
-      console.log(deliveryTime)
-      submit()
+      current = document.getElementById("currentBox").innerHTML
+      
+      submit(deliveryTime, current, coordinate)
       document.getElementById("deliveryTime").value = ""
       current = ""
       currentLocInputBox.innerHTML = current
@@ -222,10 +225,11 @@ const App=()=>{
 
     btn.addEventListener("click", async function() {
       const {latitude, longitude} = await getLocation()
-      setCoordinate({
+      /*setCoordinate({
         latitude,
         longitude
-      })
+      })*/
+      coordinate = {latitude, longitude};
       try {
         await axios({
           url: `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
