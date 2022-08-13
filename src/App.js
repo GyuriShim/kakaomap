@@ -1,19 +1,38 @@
 /*global kakao*/ 
-import React, { useEffect, useState } from 'react'
+import React, { useCallback, useEffect, useState } from 'react'
 import './App.css'
 import {BiCurrentLocation} from "react-icons/bi"
 import { firestore } from './firebase'
-import Info from './Info'
-import infowindow from './Info'
+import { getLocation } from './components/getLocation'
+import axios from 'axios'
+import { createMatching } from './lib/maching'
 
 const App=()=>{
-
   const [location, setLocation] = useState("")
   const [deliveryPay, setDeliveryPay] = useState(0)
   const [imageUrl, setImageUrl] = useState("")
   const [itemName, setItemName] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
+  const [coordinate, setCoordinate] = useState({})
+  const [address, setAddress] = useState("")
+  const [postId, setPostId] = useState("")
+  const user = "user"
+  let deliveryTime = 0
+
   const [posts, setPosts] = useState([])
+
+  const onMessageHandler = (e) => {
+    const event = JSON.parse(e.data)
+    console.log(event)
+  }
+
+  const submit = useCallback(async() => {
+    try {
+      await createMatching({user, coordinate, address,deliveryTime, postId})
+    } catch (error) {
+      console.log(error)
+    }
+  }, [user, coordinate, address, deliveryTime, postId])
 
   useEffect(() => {
     let post = firestore.collection("posts").onSnapshot((snapshot) => {
@@ -26,8 +45,12 @@ const App=()=>{
       })
       setPosts(list)
       if (list !== []) {
-        setDeliveryPay(list[0].deliveryPay)
-        setLocation(list[0].location)
+        setDeliveryPay(list[1].deliveryPay)
+        setLocation(list[1].location)
+        setTimeLimit(list[1].timeLimit)
+        setItemName(list[1].itemName)
+        setImageUrl(list[1].imageUrl)
+        setPostId(list[1].id)
       }
     })
    
@@ -36,14 +59,14 @@ const App=()=>{
   },[])
 
   useEffect(()=>{
-
+    let current = ""
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(37.4019822, 126.9218479),
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
-    var markerPosition = new kakao.maps.LatLng(37.365264512305174, 127.10676860117488); 
+    var markerPosition = new kakao.maps.LatLng(37.4019822, 126.9218479); 
 
     var markerContent = document.createElement('div');
     markerContent.className = "marker";
@@ -120,6 +143,7 @@ const App=()=>{
 
     var deliveryTimeInputBox = document.createElement("input")
     deliveryTimeInputBox.className = "deliveryTime"
+    deliveryTimeInputBox.id = "deliveryTime"
     
     deliveryTimeInnerContent.append(deliveryTime, deliveryTimeInputBox)
 
@@ -130,8 +154,9 @@ const App=()=>{
     currentLoc.className = "label"
     currentLoc.innerHTML = "현재 위치"
 
-    var currentLocInputBox = document.createElement("input")
-    currentLocInputBox.className = "deliveryTime"
+    var currentLocInputBox = document.createElement("div")
+    currentLocInputBox.className = "currentBox"
+    currentLocInputBox.innerHTML = current
 
     var btn = document.createElement("button")
     btn.className = "currentLoc"
@@ -164,7 +189,6 @@ const App=()=>{
       content: markerContent
     });
     
-    
     var infoOverlay = new kakao.maps.CustomOverlay({
       content: content,
       position: marker.getPosition(),
@@ -177,17 +201,67 @@ const App=()=>{
     });
 
     closeBtn.addEventListener("click", function(){
+      document.getElementById("deliveryTime").value = ""
+      current = ""
+      currentLocInputBox.innerHTML = current
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
     })
 
     submitBtn.addEventListener("click", function() {
+      deliveryTime = document.getElementById("deliveryTime").value
+      console.log(deliveryTime)
+      submit()
+      document.getElementById("deliveryTime").value = ""
+      current = ""
+      currentLocInputBox.innerHTML = current
       document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
+      
+    })
+
+    btn.addEventListener("click", async function() {
+      const {latitude, longitude} = await getLocation()
+      setCoordinate({
+        latitude,
+        longitude
+      })
+      try {
+        await axios({
+          url: `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
+				  method: "GET",
+				  headers: {
+					  "Authorization": "KakaoAK 535ef2884fbade72a8ae2b063fe0bd55"
+				  }
+			  }).then((response) => {
+				  console.log(response)
+				  const locationData = response.data.documents[0]
+				  console.log(locationData)
+          current = 
+            locationData.address.region_2depth_name + " " + locationData.address.region_3depth_name + " " +
+            locationData.address.main_address_no + "-" + locationData.address.sub_address_no
+          setAddress(current)
+          currentLocInputBox.innerHTML = current
+        })
+      } catch (error) {
+        console.log(error)
+      }
     })
 
   marker.setMap(map);
     }, [deliveryPay, imageUrl, itemName, location, timeLimit])
+
+    async function panTo() {
+      const coords = await getLocation()
+      var moveLatLon = new kakao.maps.LatLng(coords.latitude, coords.longitude)
+
+      var options = {
+        center: moveLatLon,
+        level: 3
+      };
+
+      var map = new kakao.maps.Map(document.getElementById('map'), options)
+    }
 
     const post = () => {
       if (window.ReactNativeWebView) {
@@ -196,12 +270,15 @@ const App=()=>{
         alert({message: "eeeerrr"})
       }
     }
+    
     return (
         <div>
-        	<div id="map" style={{width:"500px", height:"900px"}}></div> 
-          <button className='locationBtn' onClick={post}>
-            <BiCurrentLocation size={30}/>
-          </button>
+        	<div id="map" style={{width:"500px", height:"900px"}}>
+            <button className='locationBtn' onClick={panTo}>
+              <BiCurrentLocation size={30}/>
+            </button>
+          </div> 
+          
         </div>
     )
 }
