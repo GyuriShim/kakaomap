@@ -23,6 +23,7 @@
   border-radius: 25px;
   display: flex;
   align-items: center;
+  z-index: 100;
 }
 
 .locationBtn{
