@@ -8,18 +8,19 @@ import axios from 'axios'
 import { createMatching } from './lib/maching'
 
 const App=()=>{
+
   const [location, setLocation] = useState("")
   const [deliveryPay, setDeliveryPay] = useState(0)
   const [imageUrl, setImageUrl] = useState("")
   const [itemName, setItemName] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
-  //const [coordinate, setCoordinate] = useState({})
   const [address, setAddress] = useState("")
   const [postId, setPostId] = useState("")
   const user = "user"
   let deliveryTime = 0
   let current = ""
   let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
+  let deliveryPay2 = 0
   const [posts, setPosts] = useState([])
 
   const onMessageHandler = (e) => {
@@ -55,7 +56,6 @@ const App=()=>{
         setPostId(list[1].id)
       }
     })
-   
     return () => post()
     
   },[])
@@ -63,16 +63,12 @@ const App=()=>{
   useEffect(()=>{
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(37.4019822, 126.9218479),
+      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
-    var markerPosition = new kakao.maps.LatLng(37.4019822, 126.9218479); 
 
-    var markerContent = document.createElement('div');
-    markerContent.className = "marker";
-    markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay}</span>`;
-
+    //infoContent
     var content = document.createElement("div")
     content.className = "overlaybox"
     
@@ -145,7 +141,7 @@ const App=()=>{
     var deliveryTimeInputBox = document.createElement("input")
     deliveryTimeInputBox.className = "deliveryTime"
     deliveryTimeInputBox.id = "deliveryTime"
-    
+
     deliveryTimeInnerContent.append(deliveryTime, deliveryTimeInputBox)
 
     var currentLocInnerContent = document.createElement("div")
@@ -184,29 +180,43 @@ const App=()=>{
     btnInnerContent.append(closeBtn, submitBtn)
 
     content.append(locInnerContent,timeInnerContent,payInnerContent,itemInnerContent,image,line,deliveryTimeInnerContent,currentLocInnerContent,btnInnerContent)
-
-
-    var marker = new kakao.maps.CustomOverlay({
-      position: markerPosition,
-      content: markerContent
-    });
     
-    var infoOverlay = new kakao.maps.CustomOverlay({
-      content: content,
-      position: marker.getPosition(),
-      map: null
-    })
+    for(var i = 0; i < posts.length; i++){
+      setLocation(posts[i].location)
+      setDeliveryPay(posts[i].deliveryPay)
+      deliveryPay2 = posts[i].deliveryPay
+      coordinate = {latitude: posts[i].coordinate.latitude, longitude: posts[i].coordinate.longitude};
 
-    markerContent.addEventListener('click', function() {
-      document.querySelector("div.marker").style.background = "#E8FFC1";
-      infoOverlay.setMap(map);
-    });
+      var markerPosition = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude);
+
+      var markerContent = document.createElement('div');
+      markerContent.className = "marker";
+      markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay2}</span>`;
+      
+      console.log(deliveryPay)
+      var marker = new kakao.maps.CustomOverlay({
+          position: markerPosition,
+          content: markerContent
+      });
+
+      marker.setMap(map);
+
+      var infoOverlay = new kakao.maps.CustomOverlay({
+          content: content,
+          position: marker.getPosition(),
+          map: null
+      })
+      
+      markerContent.addEventListener('click', function() {
+        console.log("click!!")
+        infoOverlay.setMap(map);
+        });
+    }
 
     closeBtn.addEventListener("click", function(){
       document.getElementById("deliveryTime").value = ""
       current = ""
       currentLocInputBox.innerHTML = current
-      document.querySelector("div.marker").style.background = "#ffffff";
       infoOverlay.setMap(null);
     })
 
@@ -225,10 +235,6 @@ const App=()=>{
 
     btn.addEventListener("click", async function() {
       const {latitude, longitude} = await getLocation()
-      /*setCoordinate({
-        latitude,
-        longitude
-      })*/
       coordinate = {latitude, longitude};
       try {
         await axios({
@@ -252,39 +258,36 @@ const App=()=>{
       }
     })
 
-  marker.setMap(map);
+    async function panTo() {
+        const coords = await getLocation()
+        var moveLatLon = new kakao.maps.LatLng(coords.latitude, coords.longitude)
+  
+        var options = {
+          center: moveLatLon,
+          level: 3
+        };
+  
+        map.panTo(moveLatLon)
+        //var map = new kakao.maps.Map(document.getElementById('map'), options)
+    }
+
+    var currentLocationButton = document.querySelector(".locationBtn")
+    currentLocationButton.addEventListener("click", panTo)
+
     }, [deliveryPay, imageUrl, itemName, location, timeLimit])
 
-    async function panTo() {
-      const coords = await getLocation()
-      var moveLatLon = new kakao.maps.LatLng(coords.latitude, coords.longitude)
-
-      var options = {
-        center: moveLatLon,
-        level: 3
-      };
-
-      var map = new kakao.maps.Map(document.getElementById('map'), options)
-    }
-
-    const post = () => {
-      if (window.ReactNativeWebView) {
-        window.ReactNativeWebView.postMessage("Hello")
-      } else {
-        alert({message: "eeeerrr"})
-      }
-    }
+    
     
     return (
         <div>
         	<div id="map" style={{width:"500px", height:"900px"}}>
-            <button className='locationBtn' onClick={panTo}>
+            <button className='locationBtn' >
               <BiCurrentLocation size={30}/>
             </button>
           </div> 
-          
         </div>
     )
 }
 
 export default App;
+

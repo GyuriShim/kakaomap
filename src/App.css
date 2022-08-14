@@ -17,12 +17,13 @@
 
 .overlaybox{
   flex-direction: column;
-  width: 370px;
-  padding:40px 0px 40px 0px;
+  width: 350px;
+  padding:30px 0px 30px 0px;
   background-color: rgba(236, 224, 255, 1);
   border-radius: 25px;
   display: flex;
   align-items: center;
+  z-index: 100;
 }
 
 .locationBtn{
@@ -46,7 +47,7 @@
   border-width:0;
   font-family: "BlackHanSans-Regular";
   font-size: 15px;
-  margin: 11px 50px 0px 20px;
+  margin: 11px 50px 0px 15px;
 }
 
 .submitBtn{
@@ -127,7 +128,7 @@
 
 .btnLayout{
   justify-content:space-around;
-  width: 340px;
+  width: 320px;
   align-self:flex-end;
 }
 
