@@ -10,7 +10,6 @@ import { createMatching } from './lib/maching'
 const App=()=>{
 
   const [location, setLocation] = useState("")
-  const [deliveryPay, setDeliveryPay] = useState(0)
   const [imageUrl, setImageUrl] = useState("")
   const [itemName, setItemName] = useState("")
   const [timeLimit, setTimeLimit] = useState("")
@@ -20,7 +19,7 @@ const App=()=>{
   let deliveryTime = 0
   let current = ""
   let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
-  let deliveryPay2 = 0
+  let deliveryPay = 0
   const [posts, setPosts] = useState([])
 
   const onMessageHandler = (e) => {
@@ -47,14 +46,7 @@ const App=()=>{
         })
       })
       setPosts(list)
-      if (list !== []) {
-        setDeliveryPay(list[1].deliveryPay)
-        setLocation(list[1].location)
-        setTimeLimit(list[1].timeLimit)
-        setItemName(list[1].itemName)
-        setImageUrl(list[1].imageUrl)
-        setPostId(list[1].id)
-      }
+      
     })
     return () => post()
     
@@ -107,7 +99,7 @@ const App=()=>{
 
     var payInfoBox = document.createElement("div")
     payInfoBox.className = "infoBox"
-    payInfoBox.innerHTML = deliveryPay
+    //payInfoBox.innerHTML = deliveryPay
 
     payInnerContent.append(pay, payInfoBox)
 
@@ -183,16 +175,14 @@ const App=()=>{
     
     for(var i = 0; i < posts.length; i++){
       setLocation(posts[i].location)
-      setDeliveryPay(posts[i].deliveryPay)
-      deliveryPay2 = posts[i].deliveryPay
+      deliveryPay = posts[i].deliveryPay
       coordinate = {latitude: posts[i].coordinate.latitude, longitude: posts[i].coordinate.longitude};
 
       var markerPosition = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude);
 
       var markerContent = document.createElement('div');
       markerContent.className = "marker";
-      markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay2}</span>`;
-      
+      markerContent.innerHTML = `<span style="color:black; font-size: 15px; padding: 5px">${deliveryPay}</span>`;
       console.log(deliveryPay)
       var marker = new kakao.maps.CustomOverlay({
           position: markerPosition,
@@ -208,8 +198,10 @@ const App=()=>{
       })
       
       markerContent.addEventListener('click', function() {
-        console.log("click!!")
+        //payInfoBox.innerHTML = `${deliveryPay}`
+        console.log(deliveryPay)
         infoOverlay.setMap(map);
+        //payInfoBox.innerHTML = `${deliveryPay}`
         });
     }
 
@@ -276,8 +268,6 @@ const App=()=>{
 
     }, [deliveryPay, imageUrl, itemName, location, timeLimit])
 
-    
-    
     return (
         <div>
         	<div id="map" style={{width:"500px", height:"900px"}}>
