@@ -1,0 +1,22 @@
+@font-face {
+    font-family: "BlackHanSans-Regular";
+    src: url("../fonts/BlackHanSans-Regular.ttf");
+  }
+
+.text{
+    font-family: "BlackHanSans-Regular";
+    font-size: 15px;
+    color: black;
+    padding-left: 50px;
+}
+
+.toastBox{
+    height: 49px;
+    width: 269px;
+    border-radius: 17px;
+    background-color: #D9D9D9;
+    position: absolute;
+    left: 20px;
+    top: 50px;
+    z-index: 200;
+}

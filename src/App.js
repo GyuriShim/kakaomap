@@ -6,6 +6,7 @@ import { firestore } from './firebase'
 import { getLocation } from './components/getLocation'
 import axios from 'axios'
 import { createMatching } from './lib/maching'
+import { ToastNotification } from './components/toastNotification'
 
 const App=()=>{
   const [address, setAddress] = useState("")
@@ -15,7 +16,8 @@ const App=()=>{
   let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
 
   const [posts, setPosts] = useState([])
-
+  //let [toastState, setToastState] = useState(false);
+  let toastState = false;
   const onMessageHandler = (e) => {
     const event = JSON.parse(e.data)
     console.log(event)
@@ -53,8 +55,6 @@ const App=()=>{
     };
     var map = new kakao.maps.Map(container, options);
 
-    console.log(posts)
-    //infoContent
     for (let i = 0; i < posts.length; i++) {
       var data = posts[i]
       displayMarker(data)
@@ -216,9 +216,12 @@ const App=()=>{
         document.getElementById("deliveryTime").value = ""
         current = ""
         currentLocInputBox.innerHTML = current
-        document.querySelector("div.marker").style.background = "#ffffff";
         infoOverlay.setMap(null);
-        
+        //setToastState(true)
+        /*toastState = true;
+        if (toastState){
+            ToastNotification()
+        }*/
       })
   
       btn.addEventListener("click", async function() {
@@ -238,7 +241,7 @@ const App=()=>{
             current = 
               locationData.address.region_2depth_name + " " + locationData.address.region_3depth_name + " " +
               locationData.address.main_address_no + "-" + locationData.address.sub_address_no
-            setAddress(current)
+            
             currentLocInputBox.innerHTML = current
           })
         } catch (error) {
@@ -251,7 +254,6 @@ const App=()=>{
       
       markerContent.addEventListener('click', function() {
         //payInfoBox.innerHTML = `${deliveryPay}`
-        console.log(deliveryPay)
         infoOverlay.setMap(map);
 
       });
