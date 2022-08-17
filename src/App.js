@@ -6,19 +6,18 @@ import { firestore } from './firebase'
 import { getLocation } from './components/getLocation'
 import axios from 'axios'
 import { createMatching } from './lib/maching'
+import { ToastNotification } from './components/ToastNotification'
 
 const App=()=>{
-  const [address, setAddress] = useState("")
-  const [postId, setPostId] = useState("")
   const user = "user"
   let current = ""
   let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
-
+  
   const [posts, setPosts] = useState([])
 
   const onMessageHandler = (e) => {
     const event = JSON.parse(e.data)
-    console.log(event)
+    alert(event)
   }
 
   const submit = useCallback(async(deliveryTime, address, coordinate, postId) => {
@@ -67,6 +66,8 @@ const App=()=>{
       let timeLimit = data.timeLimit
       let itemName = data.itemName
       let postId = data.id
+      let deliveryTime = ""
+      
       coordinate = {latitude: data.coordinate.latitude, longitude: data.coordinate.longitude};
 
       var markerPosition = new kakao.maps.LatLng(coordinate.latitude, coordinate.longitude);
@@ -153,15 +154,15 @@ const App=()=>{
       var deliveryTimeInnerContent = document.createElement("div")
       deliveryTimeInnerContent.className = "innerContent"
 
-      var deliveryTime = document.createElement("span")
-      deliveryTime.className = "label"
-      deliveryTime.innerHTML = "배송 예상 시간"
+      var deliveryExTime = document.createElement("span")
+      deliveryExTime.className = "label"
+      deliveryExTime.innerHTML = "배송 예상 시간"
 
       var deliveryTimeInputBox = document.createElement("input")
-      deliveryTimeInputBox.className = "deliveryTime"
-      deliveryTimeInputBox.id = "deliveryTime"
+      deliveryTimeInputBox.className = "deliveryExTime"
+      deliveryTimeInputBox.id = "deliveryExTime"
 
-      deliveryTimeInnerContent.append(deliveryTime, deliveryTimeInputBox)
+      deliveryTimeInnerContent.append(deliveryExTime, deliveryTimeInputBox)
 
       var currentLocInnerContent = document.createElement("div")
       currentLocInnerContent.className = "innerContent"
@@ -202,23 +203,21 @@ const App=()=>{
       content.append(locInnerContent,timeInnerContent,payInnerContent,itemInnerContent,image,line,deliveryTimeInnerContent,currentLocInnerContent,btnInnerContent)
 
       closeBtn.addEventListener("click", function(){
-        document.getElementById("deliveryTime").value = ""
+        document.getElementById("deliveryExTime").value = ""
         current = ""
         currentLocInputBox.innerHTML = current
         infoOverlay.setMap(null);
       })
   
       submitBtn.addEventListener("click", function() {
-        deliveryTime = document.getElementById("deliveryTime").value
+        deliveryTime = document.getElementById("deliveryExTime").value
         current = document.getElementById("currentBox").innerHTML
         
         submit(deliveryTime, current, coordinate, postId)
-        document.getElementById("deliveryTime").value = ""
+        document.getElementById("deliveryExTime").value = ""
         current = ""
         currentLocInputBox.innerHTML = current
-        document.querySelector("div.marker").style.background = "#ffffff";
         infoOverlay.setMap(null);
-        
       })
   
       btn.addEventListener("click", async function() {
@@ -238,7 +237,6 @@ const App=()=>{
             current = 
               locationData.address.region_2depth_name + " " + locationData.address.region_3depth_name + " " +
               locationData.address.main_address_no + "-" + locationData.address.sub_address_no
-            setAddress(current)
             currentLocInputBox.innerHTML = current
           })
         } catch (error) {
@@ -261,20 +259,13 @@ const App=()=>{
     async function panTo() {
         const coords = await getLocation()
         var moveLatLon = new kakao.maps.LatLng(coords.latitude, coords.longitude)
-  
-        var options = {
-          center: moveLatLon,
-          level: 3
-        };
-  
         map.panTo(moveLatLon)
-        //var map = new kakao.maps.Map(document.getElementById('map'), options)
     }
 
     var currentLocationButton = document.querySelector(".locationBtn")
     currentLocationButton.addEventListener("click", panTo)
 
-    },)
+    })
 
     return (
         <div>
@@ -283,6 +274,7 @@ const App=()=>{
               <BiCurrentLocation size={30}/>
             </button>
           </div> 
+          
         </div>
     )
 }

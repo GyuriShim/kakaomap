@@ -98,7 +98,7 @@
   font-size: 15px;
 }
 
-.deliveryTime{
+.deliveryExTime{
   align-items: stretch; 
   padding: 4px;
   background-color:#fff;
@@ -137,3 +137,4 @@
   border-width: 0;
   background-color: rgba(236, 224, 255, 0);
 }
+
