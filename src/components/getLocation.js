@@ -20,8 +20,8 @@ function getLocation() {
           },
           {
             enableHighAccuracy: false,
-            maximumAge: 0,
-            timeout: Infinity,
+            maximumAge: 1000,
+            timeout: 20000,
           },
         );
       }).then(coords => {
