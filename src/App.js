@@ -60,6 +60,8 @@ const App=()=>{
       displayMarker(data)
     }
         
+    document.addEventListener("message", onMessageHandler)
+    
     function displayMarker(data){
       let imageUrl = data.imageUrl
       let location = data.location
