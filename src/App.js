@@ -9,7 +9,7 @@ import { createMatching } from './lib/maching'
 import { ToastNotification } from './components/toastNotification'
 
 const App=()=>{
-  const user = "user"
+  let user = {id:"", email: ""}
   let current = ""
   let coordinate = {latitude: 37.4019822, longitude: 126.9218479};
   
@@ -18,17 +18,18 @@ const App=()=>{
   let toastState = false;
   const onMessageHandler = (e) => {
     const event = JSON.parse(e.data)
-    alert(event)
+    console.log(event)
+    user = event
   }
 
-  const submit = useCallback(async(deliveryTime, address, coordinate, postId) => {
+  const submit = useCallback(async(user, deliveryTime, address, coordinate, postId) => {
     try {
         console.log("deliveryTime: ", deliveryTime)
       await createMatching({user, coordinate, address, deliveryTime, postId})
     } catch (error) {
       console.log(error)
     }
-  }, [user])
+  }, [])
 
   useEffect(() => {
     let post = firestore.collection("posts").onSnapshot((snapshot) => {
