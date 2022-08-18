@@ -50,7 +50,7 @@ const App=()=>{
   useEffect(()=>{
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(37.3227831, 127.12505),
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
@@ -61,7 +61,7 @@ const App=()=>{
     }
         
     document.addEventListener("message", onMessageHandler)
-    
+
     function displayMarker(data){
       let imageUrl = data.imageUrl
       let location = data.location
