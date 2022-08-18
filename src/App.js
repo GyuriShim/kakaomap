@@ -6,7 +6,7 @@ import { firestore } from './firebase'
 import { getLocation } from './components/getLocation'
 import axios from 'axios'
 import { createMatching } from './lib/maching'
-import { ToastNotification } from './components/toastNotification'
+import { ToastNotification } from './components/ToastNotification'
 
 const App=()=>{
   let user = {id:"", email: ""}
