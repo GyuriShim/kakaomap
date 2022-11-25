@@ -33,7 +33,7 @@ const App=()=>{
   }, [user])
 
   useEffect(() => {
-    let post = firestore.collection("posts").orderBy("createdAt", "desc").onSnapshot((snapshot) => {
+    let post = firestore.collection("posts").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
       const list = []
       snapshot.forEach((doc) => {
         list.push({
