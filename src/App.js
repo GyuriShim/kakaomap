@@ -231,7 +231,7 @@ const App=()=>{
             url: `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
             method: "GET",
             headers: {
-              "Authorization": "KakaoAK 535ef2884fbade72a8ae2b063fe0bd55"
+              "Authorization": "KakaoAK fb19fa5cfc0965a490753b8e7ac7898f"
             }
           }).then((response) => {
             console.log(response)
