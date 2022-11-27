@@ -33,7 +33,7 @@ const App=()=>{
   }, [user])
 
   useEffect(() => {
-    let post = firestore.collection("posts").onSnapshot((snapshot) => {
+    let post = firestore.collection("posts").orderBy("createdAt", "asc").onSnapshot((snapshot) => {
       const list = []
       snapshot.forEach((doc) => {
         list.push({
@@ -50,7 +50,7 @@ const App=()=>{
   useEffect(()=>{
     var container = document.getElementById('map');
     var options = {
-      center: new kakao.maps.LatLng(37.365264512305174, 127.10676860117488),
+      center: new kakao.maps.LatLng(37.3227831, 127.12505),
       level: 3
     };
     var map = new kakao.maps.Map(container, options);
@@ -60,6 +60,8 @@ const App=()=>{
       displayMarker(data)
     }
         
+    document.addEventListener("message", onMessageHandler)
+
     function displayMarker(data){
       let imageUrl = data.imageUrl
       let location = data.location
@@ -229,7 +231,7 @@ const App=()=>{
             url: `https://dapi.kakao.com/v2/local/geo/coord2address.json?x=${longitude}&y=${latitude}&input_coord=WGS84`,
             method: "GET",
             headers: {
-              "Authorization": "KakaoAK 535ef2884fbade72a8ae2b063fe0bd55"
+              "Authorization": "KakaoAK fb19fa5cfc0965a490753b8e7ac7898f"
             }
           }).then((response) => {
             console.log(response)
