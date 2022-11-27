@@ -201,7 +201,7 @@ const App=()=>{
       var submitBtn = document.createElement("button")
       submitBtn.className = "submitBtn"
       submitBtn.innerHTML = "매칭 요청"
-      if(writerEmail == user.email){
+      if(writerEmail == user.data.email){
         submitBtn.disabled = true
       }
 
