@@ -70,7 +70,6 @@ const App=()=>{
       let itemName = data.itemName
       let postId = data.id
       let deliveryTime = ""
-      let writerEmail = data.user.email
       
       coordinate = {latitude: data.coordinate.latitude, longitude: data.coordinate.longitude};
 
@@ -201,9 +200,6 @@ const App=()=>{
       var submitBtn = document.createElement("button")
       submitBtn.className = "submitBtn"
       submitBtn.innerHTML = "매칭 요청"
-      if(writerEmail == user.data.email){
-        submitBtn.disabled = true
-      }
 
       btnInnerContent.append(closeBtn, submitBtn)
 
@@ -286,4 +282,3 @@ const App=()=>{
 }
 
 export default App;
-
