@@ -6,6 +6,7 @@ import { firestore } from './firebase'
 import { getLocation } from './components/getLocation'
 import axios from 'axios'
 import { createMatching } from './lib/maching'
+import { ToastNotification } from './components/toastNotification'
 
 const App=()=>{
   const [user, setUser] = useState({})
@@ -69,7 +70,6 @@ const App=()=>{
       let itemName = data.itemName
       let postId = data.id
       let deliveryTime = ""
-      let writer = data.user.email
       
       coordinate = {latitude: data.coordinate.latitude, longitude: data.coordinate.longitude};
 
@@ -200,9 +200,6 @@ const App=()=>{
       var submitBtn = document.createElement("button")
       submitBtn.className = "submitBtn"
       submitBtn.innerHTML = "매칭 요청"
-      if(writer === user.data.email){
-        submitBtn.disabled = true
-      }
 
       btnInnerContent.append(closeBtn, submitBtn)
 
